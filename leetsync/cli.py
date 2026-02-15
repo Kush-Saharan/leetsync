@@ -1,8 +1,20 @@
-from .api import get_recent_submissions
+from .api import get_recent_submissions, get_submission_detail
 
 def run():
     submissions = get_recent_submissions()
 
+    if not submissions:
+        print("No submissions found.")
+        return
+
+    # Sort by timestamp (descending)
+    submissions = sorted(
+        submissions,
+        key=lambda x: int(x["timestamp"]),
+        reverse=True
+    )
+
+    # Filter accepted only
     accepted = [
         s for s in submissions
         if s["statusDisplay"] == "Accepted"
@@ -16,5 +28,16 @@ def run():
 
     print("Latest Accepted Submission:")
     print(f"Title: {latest['title']}")
-    print(f"Language: {latest['lang']}")
     print(f"Submission ID: {latest['id']}")
+    print(f"Timestamp: {latest['timestamp']}")
+
+    print("\nFetching full submission details...\n")
+
+    detail = get_submission_detail(latest["id"])
+
+    print("Difficulty:", detail["question"]["difficulty"])
+    print("Runtime:", detail["runtime"])
+    print("Memory:", detail["memory"])
+    print("Tags:", [tag["name"] for tag in detail["question"]["topicTags"]])
+    print("\nCode:\n")
+    print(detail["code"])

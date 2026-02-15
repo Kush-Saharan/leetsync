@@ -44,5 +44,53 @@ def get_recent_submissions():
     data = response.json()
     return data["data"]["recentSubmissionList"]
 
+def get_submission_detail(submission_id):
+    query = """
+    query submissionDetails($submissionId: Int!) {
+      submissionDetails(submissionId: $submissionId) {
+        code
+        runtime
+        runtimeDisplay
+        memory
+        memoryDisplay
+        lang {
+          name
+        }
+        question {
+          title
+          titleSlug
+          difficulty
+          topicTags {
+            name
+          }
+        }
+      }
+    }
+    """
+
+    payload = {
+        "query": query,
+        "variables": {
+            "submissionId": int(submission_id)
+        }
+    }
+
+    cookies = {
+        "LEETCODE_SESSION": LEETCODE_SESSION,
+        "csrftoken": CSRFTOKEN
+    }
+
+    response = requests.post(
+        GRAPHQL_URL,
+        json=payload,
+        headers=HEADERS,
+        cookies=cookies
+    )
+
+    print("Detail Status:", response.status_code)
+    print("Detail Response:", response.text)
+
+    data = response.json()
+    return data["data"]["submissionDetails"]
 
 
