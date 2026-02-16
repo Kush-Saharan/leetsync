@@ -1,4 +1,6 @@
 from .api import get_recent_submissions, get_submission_detail
+from .formatter import save_submission
+
 
 def run():
     submissions = get_recent_submissions()
@@ -35,9 +37,5 @@ def run():
 
     detail = get_submission_detail(latest["id"])
 
-    print("Difficulty:", detail["question"]["difficulty"])
-    print("Runtime:", detail["runtime"])
-    print("Memory:", detail["memory"])
-    print("Tags:", [tag["name"] for tag in detail["question"]["topicTags"]])
-    print("\nCode:\n")
-    print(detail["code"])
+    save_submission(detail)
+
