@@ -1,5 +1,6 @@
 from .api import get_recent_submissions, get_submission_detail
 from .formatter import save_submission
+from .state_manager import load_last_synced, save_last_synced
 
 
 def run():
@@ -9,14 +10,12 @@ def run():
         print("No submissions found.")
         return
 
-    # Sort by timestamp (descending)
     submissions = sorted(
         submissions,
         key=lambda x: int(x["timestamp"]),
         reverse=True
     )
 
-    # Filter accepted only
     accepted = [
         s for s in submissions
         if s["statusDisplay"] == "Accepted"
@@ -26,16 +25,31 @@ def run():
         print("No accepted submissions found.")
         return
 
-    latest = accepted[0]
+    last_synced_id = load_last_synced()
 
-    print("Latest Accepted Submission:")
-    print(f"Title: {latest['title']}")
-    print(f"Submission ID: {latest['id']}")
-    print(f"Timestamp: {latest['timestamp']}")
+    print("Last synced ID:", last_synced_id)
 
-    print("\nFetching full submission details...\n")
+    new_submissions = []
 
-    detail = get_submission_detail(latest["id"])
+    for submission in accepted:
+        if last_synced_id and submission["id"] == str(last_synced_id):
+            break
+        new_submissions.append(submission)
 
-    save_submission(detail)
+    if not new_submissions:
+        print("No new submissions to sync.")
+        return
 
+    # Reverse to sync oldest first
+    new_submissions.reverse()
+
+    for submission in new_submissions:
+        print(f"Syncing submission {submission['id']}...")
+
+        detail = get_submission_detail(submission["id"])
+
+        if detail:
+            save_submission(detail)
+            save_last_synced(submission["id"])
+        else:
+            print("Failed to fetch detail, skipping.")

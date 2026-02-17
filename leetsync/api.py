@@ -38,8 +38,8 @@ def get_recent_submissions():
         cookies=cookies
     )
 
-    print("Status Code:", response.status_code)
-    print("Response Text:", response.text)
+    # print("Status Code:", response.status_code)
+    # print("Response Text:", response.text)
 
     data = response.json()
     return data["data"]["recentSubmissionList"]
@@ -88,7 +88,7 @@ def get_submission_detail(submission_id):
     )
 
     print("Detail Status:", response.status_code)
-    print("Detail Response:", response.text)
+    # print("Detail Response:", response.text)
 
     data = response.json()
     return data["data"]["submissionDetails"]

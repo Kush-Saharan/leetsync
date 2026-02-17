@@ -82,3 +82,46 @@ Important findings(from errors based on wrong data input datatypes):
 Solved by printing(response.status_code and response.text)
 
 -> Till commit 2
+
+### Formatter
+
+Responsibilities:
+- Detect language - map to extension
+- Choose primary topic from topicTags
+- Create folder if not exists
+- Generate filename from titleSlug
+- Format solution with metadata header
+
+### Added Incremental Sync Engine
+
+Algorithm:
+- Fetch all recent submissions
+- Sort by timestamp descending
+- Filter accepted only
+- Compare against last_synced_id
+- Collect newer submissions
+- Reverse order (sync oldest first)
+- Save files
+- Update state
+
+We reverse to fetch the latest first
+
+## Project structure now:
+
+CLI
+  ↓
+Fetch recent submissions
+  ↓
+Filter Accepted
+  ↓
+Compare with .synced.json
+  ↓
+Fetch details via GraphQL
+  ↓
+Format file
+  ↓
+Save
+  ↓
+Update state
+
+

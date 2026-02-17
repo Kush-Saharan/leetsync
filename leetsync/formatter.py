@@ -19,7 +19,7 @@ def save_submission(detail):
     memory = detail["memoryDisplay"]
 
     # Determine language extension
-    print("Language name:", detail["lang"]["name"])
+    # print("Language name:", detail["lang"]["name"])
     lang_name = detail["lang"]["name"].lower()
 
     if "cpp" in lang_name:
