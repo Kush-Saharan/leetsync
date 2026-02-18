@@ -26,18 +26,23 @@ Build a CLI tool that:
 - Extracts metadata (difficulty, tags, runtime, memory)
 - Saves formatted solution locally
 
-### Architecture:
+### Data flow:
 CLI
- ↓
-GraphQL API Call (Authenticated)
- ↓
-Recent Submission List
- ↓
-Filter Accepted
- ↓
-Fetch Submission Details
- ↓
-Format + Save File
+  ↓
+requests.post()
+  ↓
+GraphQL endpoint
+  ↓
+LeetCode internal backend
+  ↓
+Database
+  ↓
+Response JSON
+  ↓
+Your script parses
+  ↓
+Save file locally
+
 
 ### Problem:
 Leetcode doesnt provide a public api
@@ -125,3 +130,35 @@ Save
 Update state
 
 
+-> Till commit 4
+
+### Git Automation Layer
+
+In a repository made for leetcode solutions:
+git add .
+git diff --cached --quiet
+if changes:
+    git commit
+    git push
+
+## Project structure now:
+
+User
+  ↓
+CLI Tool (Python)
+  ↓
+LeetCode GraphQL (Authenticated)
+  ↓
+Fetch recent submissions
+  ↓
+Filter Accepted
+  ↓
+Fetch submission details
+  ↓
+Parse metadata
+  ↓
+Generate structured file
+  ↓
+Update state (.synced.json)
+  ↓
+Git commit & push

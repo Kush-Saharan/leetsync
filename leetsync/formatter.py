@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from .config import TARGET_REPO_PATH
 
 
 def clean_filename(slug: str, extension: str):
@@ -35,9 +36,10 @@ def save_submission(detail):
     primary_topic = tags[0] if tags else "Misc"
 
     # Create directory
-    base_folder = "leetcode"
+    base_folder = TARGET_REPO_PATH
     folder_path = os.path.join(base_folder, primary_topic)
     os.makedirs(folder_path, exist_ok=True)
+
 
     # Create file path
     filename = clean_filename(slug, extension)

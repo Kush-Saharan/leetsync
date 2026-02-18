@@ -1,6 +1,7 @@
 from .api import get_recent_submissions, get_submission_detail
 from .formatter import save_submission
 from .state_manager import load_last_synced, save_last_synced
+from .git_utils import git_commit_and_push
 
 
 def run():
@@ -26,7 +27,6 @@ def run():
         return
 
     last_synced_id = load_last_synced()
-
     print("Last synced ID:", last_synced_id)
 
     new_submissions = []
@@ -43,6 +43,8 @@ def run():
     # Reverse to sync oldest first
     new_submissions.reverse()
 
+    synced_count = 0   #Track successful saves
+
     for submission in new_submissions:
         print(f"Syncing submission {submission['id']}...")
 
@@ -50,6 +52,17 @@ def run():
 
         if detail:
             save_submission(detail)
-            save_last_synced(submission["id"])
+            # save_last_synced(submission["id"])
+            latest_synced_id = submission["id"]
+            synced_count += 1
         else:
             print("Failed to fetch detail, skipping.")
+
+    if latest_synced_id:
+        save_last_synced(latest_synced_id)
+        git_commit_and_push()
+
+    #Commit only if something was saved
+    if synced_count > 0:
+        print(f"Committing {synced_count} new submissions...")
+        git_commit_and_push()
