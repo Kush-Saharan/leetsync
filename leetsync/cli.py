@@ -3,8 +3,11 @@ from .formatter import save_submission
 from .state_manager import load_last_synced, save_last_synced
 from .git_utils import git_commit_and_push
 
+from leetsync.ai.enhancer import enhance_solution, build_prompt
 
-def run():
+
+def run(enhance_mode="local"):  # enhance_mode: None | "local" | "gemini"
+
     submissions = get_recent_submissions()
 
     if not submissions:
@@ -40,29 +43,48 @@ def run():
         print("No new submissions to sync.")
         return
 
-    # Reverse to sync oldest first
     new_submissions.reverse()
 
-    synced_count = 0   #Track successful saves
+    synced_count = 0
+    latest_synced_id = None
 
     for submission in new_submissions:
         print(f"Syncing submission {submission['id']}...")
 
         detail = get_submission_detail(submission["id"])
+        # print(detail)
 
-        if detail:
-            save_submission(detail)
-            # save_last_synced(submission["id"])
-            latest_synced_id = submission["id"]
-            synced_count += 1
-        else:
+
+        if not detail:
             print("Failed to fetch detail, skipping.")
+            continue
 
-    if latest_synced_id:
-        save_last_synced(latest_synced_id)
-        git_commit_and_push()
+        if enhance_mode:
+            print(f"Enhancing with AI ({enhance_mode})...")
 
-    #Commit only if something was saved
+            question = detail["question"]
+
+            prompt = build_prompt(
+                title=question["title"],
+                difficulty=question["difficulty"],
+                tags=[tag["name"] for tag in question["topicTags"]],
+                language=detail["lang"]["name"],
+                code=detail["code"]
+            )
+
+            ai_output = enhance_solution(prompt, mode=enhance_mode)
+
+            if ai_output:
+                detail["ai_explanation"] = ai_output
+            else:
+                print("AI enhancement failed. Saving raw solution.")
+
+        save_submission(detail)
+
+        latest_synced_id = submission["id"]
+        synced_count += 1
+
     if synced_count > 0:
+        save_last_synced(latest_synced_id)
         print(f"Committing {synced_count} new submissions...")
         git_commit_and_push()

@@ -162,3 +162,66 @@ Generate structured file
 Update state (.synced.json)
   ↓
 Git commit & push
+
+-> Till commit 5
+
+### AI-augmented solution archiver
+
+Goal:
+AI generates:
+- Explanation
+- Approach
+- Time/Space complexity
+- Proper main() driver (if needed)
+- Merge AI output into formatted file
+
+Example format of sending to any AI:
+
+You are given a LeetCode solution.
+
+Title: Two Sum
+Difficulty: Easy
+Tags: Array, Hash Table
+
+Code:
+<code_here>
+
+Generate:
+1. Clear explanation of approach
+2. Time and space complexity
+3. A working main function (in same language)
+4. Format in markdown-style comment block
+
+## Project architecture now:
+CLI
+  ↓
+Fetch submission details (GraphQL)
+  ↓
+Build AI prompt
+  ↓
+AI backend (Local Ollama / Gemini)
+  ↓
+Inject explanation into detail object
+  ↓
+Formatter embeds explanation inside code file
+  ↓
+Git commit
+
+Primary Backend: Ollama (Local LLM)
+model used:deepseek-coder
+AI endpoint:http://localhost:11434/api/generate
+
+Advantages:
+- Fully local
+- No API cost
+- No quota limits
+- No internet dependency
+- Private inference
+
+Optional Backend: Gemini (Cloud)
+- Using official google-genai SDK.
+However:
+- Free tier quota often limited to 0
+- Requires billing attachment
+- Not default backend
+

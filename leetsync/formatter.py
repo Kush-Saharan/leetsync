@@ -48,22 +48,41 @@ def save_submission(detail):
     # Prevent overwrite
     if os.path.exists(file_path):
         print("File already exists. Skipping save.")
-        return
+        return False
+    
+    if extension == "py":
+        comment_start = '"""'
+        comment_end = '"""'
+    elif extension in ["cpp", "java"]:
+        comment_start = "/*"
+        comment_end = "*/"
+    else:
+        comment_start = ""
+        comment_end = ""
 
-    # Format file content
-    content = f"""/*
+    ai_section = ""
+
+    if detail.get("ai_explanation"):
+        ai_section = f"""{comment_start}
+Explanation:
+{detail['ai_explanation']}
+{comment_end}
+    """
+
+    content = f"""{comment_start}
 Problem: {title}
 Difficulty: {difficulty}
 Tags: {", ".join(tags)}
 Runtime: {runtime}
 Memory: {memory}
 Synced On: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-*/
+{comment_end}
+
+{ai_section}
 
 {code}
-"""
+    """
 
-    # Write file
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(content)
 
