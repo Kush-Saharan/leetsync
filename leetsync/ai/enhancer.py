@@ -1,12 +1,12 @@
 from .ollama_backend import enhance_with_ollama
 from .gemini_backend import enhance_with_gemini
 
-def enhance_solution(prompt: str, mode: str = "local") -> str:
+def enhance_solution(prompt: str, mode: str) -> str:
     if mode == "local":
         return enhance_with_ollama(prompt)
 
-    # elif mode == "gemini":
-    #     return enhance_with_gemini(prompt)
+    elif mode == "gemini":
+        return enhance_with_gemini(prompt)
 
     else:
         raise ValueError("Invalid AI mode. Use 'local' or 'gemini'.")
