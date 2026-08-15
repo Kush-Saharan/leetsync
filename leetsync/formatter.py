@@ -76,6 +76,7 @@ Tags: {", ".join(tags)}
 Runtime: {runtime}
 Memory: {memory}
 Synced On: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+Problem Link: https://leetcode.com/problems/{slug}/
 {comment_end}
 
 {ai_section}
